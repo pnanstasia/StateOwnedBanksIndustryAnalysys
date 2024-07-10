@@ -10,7 +10,7 @@ def generate_date_range(start, end):
     date_range = pd.date_range(start=start, end=end, freq='M').strftime('%Y-%m').tolist()
     return date_range
 
-def aggregate_data(column_name, output_csv):
+def aggregate_data(column_name, output_csv, sheet_number):
     base_dir = 'original_dataset/aggregation'
     date_range = generate_date_range('2020-02', '2024-06')
     result_df = pd.DataFrame(index=date_range, columns=banks)
@@ -21,7 +21,7 @@ def aggregate_data(column_name, output_csv):
                 month_path = os.path.join(year_path, month_file)
                 if month_file.endswith('.xlsx'):
                     date_str = f"{year}-{month_file.split('-')[1]}"
-                    df = pd.read_excel(month_path)
+                    df = pd.read_excel(month_path, sheet_name=sheet_number)
                     df.columns = df.iloc[3]
                     if 1 in df.columns:
                         df.columns = df.iloc[2]
@@ -40,4 +40,4 @@ def aggregate_data(column_name, output_csv):
                                 break        
     result_df.to_csv(output_csv)
 
-aggregate_data('Total assets', 'output.csv')
+aggregate_data('Total income', 'total_income.csv', 3)

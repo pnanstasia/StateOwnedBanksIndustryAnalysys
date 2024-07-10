@@ -127,12 +127,15 @@ def plot_stacked_area_chart(csv_file, list):
     df.index = pd.to_datetime(df.index)
 
     # Plotting
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(14, 7))
 
     # Plot the stacked area with transparency
     for bank in list:
-        plt.fill_between(df.index, df[bank[0]], color=bank[1], alpha=0.5, label=bank[0])
-        plt.plot(df.index, df[bank[0]], color=bank[1])
+        if bank[0] == 'sense':
+            plt.fill_between(df.index, df[bank[0]], color=bank[1], label=bank[0])
+        else:
+            plt.fill_between(df.index, df[bank[0]], color=bank[1], alpha=0.5, label=bank[0])
+        plt.plot(df.index, df[bank[0]], color=bank[1], linewidth=3)
 
     # Add labels and title
     plt.xlabel('Date')

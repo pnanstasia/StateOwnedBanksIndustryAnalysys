@@ -95,8 +95,10 @@ def plot_donut_chart(csv_file, period, all_banks):
 
     # Create the donut chart
     fig, ax = plt.subplots(figsize=(10, 8))
-    wedges, texts, autotexts = ax.pie(values, colors=colors, labels=labels, autopct='%1.1f%%', pctdistance=0.85,
-                                      wedgeprops=dict(width=0.5))
+    wedges, texts, autotexts = ax.pie(
+        values, colors=colors, labels=labels, autopct='%1.1f%%', pctdistance=0.85,
+        wedgeprops=dict(width=0.5, edgecolor='white', alpha=0.5)  # Set transparency and keep edge color solid
+    )
 
     # Add a circle at the center to create the donut shape
     centre_circle = plt.Circle((0, 0), 0.70, fc='white')
@@ -116,7 +118,7 @@ def plot_donut_chart(csv_file, period, all_banks):
     plt.show()
 
 
-def plot_stacked_area_chart(csv_file):
+def plot_stacked_area_chart(csv_file, list):
     # Read CSV into pandas DataFrame
     df = pd.read_csv(csv_file)
 
@@ -127,15 +129,19 @@ def plot_stacked_area_chart(csv_file):
     # Plotting
     plt.figure(figsize=(10, 6))
 
-    # Iterate over each bank column and plot as stacked area
-    for bank in df.columns:
-        plt.fill_between(df.index, df[bank], label=bank)
+    # Plot the stacked area with transparency
+    for bank in list:
+        plt.fill_between(df.index, df[bank[0]], color=bank[1], alpha=0.5, label=bank[0])
+        plt.plot(df.index, df[bank[0]], color=bank[1])
 
     # Add labels and title
     plt.xlabel('Date')
     plt.ylabel('Amount')
     plt.title('Stacked Area Chart of Bank Balances')
     plt.legend()
+
+    # Show plot
+    plt.show()
 
     # Show plot
     plt.show()

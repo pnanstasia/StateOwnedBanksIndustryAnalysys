@@ -58,6 +58,6 @@ def remove_rolling_sum(file_path, out_path):
             df_diff.loc[idx] = df.loc[idx]
     df_diff.to_csv(out_path)
 
-remove_rolling_sum('data/original/net_interest_income.csv', 'data/differenced/net_interest_income.csv')
+remove_rolling_sum('data/original/total_expenses.csv', 'data/differenced/total_expenses.csv')
 
-#aggregate_data('Net Interest income/( Net interest expenses)', 'net_interest_income.csv', 3)
+# aggregate_data('Total expenses', 'total_expenses.csv', 3)

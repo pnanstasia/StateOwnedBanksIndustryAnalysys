@@ -2,6 +2,7 @@ import openpyxl
 import pandas as pd
 import os
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 banks = ["privatbank", "oschadbank", "ukreximbank", "ukrgasbank", "sense", "first investment bank"]
 
@@ -14,13 +15,19 @@ def aggregate_data(column_name, output_csv, sheet_number):
     base_dir = 'original_dataset/aggregation'
     date_range = generate_date_range('2020-02', '2024-06')
     result_df = pd.DataFrame(index=date_range, columns=banks)
+    
     for year in os.listdir(base_dir):
         year_path = os.path.join(base_dir, year)
         if os.path.isdir(year_path):
             for month_file in os.listdir(year_path):
                 month_path = os.path.join(year_path, month_file)
                 if month_file.endswith('.xlsx'):
+                    # Extract date from the filename and subtract one month
                     date_str = f"{year}-{month_file.split('-')[1]}"
+                    date_obj = datetime.strptime(date_str, '%Y-%m')
+                    date_obj -= relativedelta(months=1)
+                    new_date_str = date_obj.strftime('%Y-%m')
+                    
                     df = pd.read_excel(month_path, sheet_name=sheet_number)
                     df.columns = df.iloc[3]
                     if 1 in df.columns:
@@ -36,8 +43,11 @@ def aggregate_data(column_name, output_csv, sheet_number):
                             continue
                         for bank_from_list in banks:
                             if bank_from_list in bank.lower():
-                                result_df.at[date_str, bank_from_list] = df[column_name][counter]
+                                result_df.at[new_date_str, bank_from_list] = df[column_name][counter]
                                 break        
+    # Move the last row to the first row
+    result_df = result_df.iloc[[len(result_df)-1] + list(range(len(result_df)-1))]
+    
     result_df.to_csv(output_csv)
 
-aggregate_data('Total income', 'total_income.csv', 3)
+aggregate_data('Total assets', 'total_assets.csv', 0)

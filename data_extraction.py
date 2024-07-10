@@ -114,3 +114,28 @@ def plot_donut_chart(csv_file, period, all_banks):
 
     plt.tight_layout()
     plt.show()
+
+
+def plot_stacked_area_chart(csv_file):
+    # Read CSV into pandas DataFrame
+    df = pd.read_csv(csv_file)
+
+    # Set the index to the first column (date) for easier plotting
+    df.set_index(df.columns[0], inplace=True)
+    df.index = pd.to_datetime(df.index)
+
+    # Plotting
+    plt.figure(figsize=(10, 6))
+
+    # Iterate over each bank column and plot as stacked area
+    for bank in df.columns:
+        plt.fill_between(df.index, df[bank], label=bank)
+
+    # Add labels and title
+    plt.xlabel('Date')
+    plt.ylabel('Amount')
+    plt.title('Stacked Area Chart of Bank Balances')
+    plt.legend()
+
+    # Show plot
+    plt.show()

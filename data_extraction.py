@@ -65,5 +65,52 @@ def find_target_column(df, column):
             return col
     return None
 
-if __name__=="__main__":
-    extract_bank_data('original_dataset/aggregation', 'Assets', 'Total assets', 'data/Total_Assets')
+# extract_bank_data('original_dataset/aggregation', 'Assets', 'Total assets', 'data/Total_Assets')
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+def plot_donut_chart(csv_file, period, all_banks):
+    # Read the CSV file
+    df = pd.read_csv(csv_file, header=0, names=['date'] + [bank[0] for bank in all_banks])
+    df['date'] = pd.to_datetime(df['date'])
+    df.set_index('date', inplace=True)
+
+    # Format the period to match the index
+    period = pd.to_datetime(period).strftime('%Y-%m')
+
+    # Check if the specified period exists in the dataframe
+    if period not in df.index.strftime('%Y-%m'):
+        raise ValueError(f"Period '{period}' not found in the CSV file.")
+
+    # Extract data for the specified period
+    data = df.loc[df.index.strftime('%Y-%m') == period].iloc[0]
+
+    # Filter data and colors for banks present in the CSV
+    present_banks = [bank for bank in all_banks if bank[0] in data.index]
+    values = [data[bank[0]] for bank in present_banks]
+    colors = [bank[1] for bank in present_banks]
+    labels = [bank[0].capitalize() for bank in present_banks]
+
+    # Create the donut chart
+    fig, ax = plt.subplots(figsize=(10, 8))
+    wedges, texts, autotexts = ax.pie(values, colors=colors, labels=labels, autopct='%1.1f%%', pctdistance=0.85,
+                                      wedgeprops=dict(width=0.5))
+
+    # Add a circle at the center to create the donut shape
+    centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+    fig.gca().add_artist(centre_circle)
+
+    # Add title
+    plt.title(f"Bank Distribution for {period}", fontsize=16)
+
+    # Adjust text properties
+    plt.setp(autotexts, size=8, weight="bold")
+    plt.setp(texts, size=10)
+
+    # Add legend
+    ax.legend(wedges, labels, title="Banks", loc="center left", bbox_to_anchor=(1, 0, 0.5, 1))
+
+    plt.tight_layout()
+    plt.show()

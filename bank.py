@@ -50,4 +50,14 @@ def aggregate_data(column_name, output_csv, sheet_number):
     
     result_df.to_csv(output_csv)
 
-aggregate_data('Total assets', 'total_assets.csv', 0)
+def remove_rolling_sum(file_path, out_path):
+    df = pd.read_csv(file_path, index_col=0)
+    df_diff = df.diff(axis=0)
+    for idx in df.index:
+        if datetime.strptime(idx, '%Y-%m').month == 1:
+            df_diff.loc[idx] = df.loc[idx]
+    df_diff.to_csv(out_path)
+
+remove_rolling_sum('data/total_income.csv', 'data/total_income_differ.csv')
+
+#aggregate_data('Total assets', 'total_assets.csv', 0)
